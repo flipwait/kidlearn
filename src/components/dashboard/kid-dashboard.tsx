@@ -17,11 +17,14 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useAuth } from "@/lib/auth-context";
+import { UserMenu } from "@/components/user-menu";
 
 const navItems = [
   { icon: Home, label: "Home", href: "/dashboard", active: true },
   { icon: BookOpen, label: "My Lessons", href: "/learn" },
   { icon: Sparkles, label: "AI Tutor", href: "/ai-tutor" },
+  { icon: Sparkles, label: "Create Stories", href: "/create" },
   { icon: Gamepad2, label: "Games", href: "/games" },
   { icon: BookOpen, label: "Words", href: "/words" },
   { icon: Shield, label: "Parents", href: "/parent" },
@@ -80,6 +83,16 @@ const highFreqWords = [
 ];
 
 export function KidDashboard() {
+  const { user } = useAuth();
+  const name = user?.name || "Friend";
+  const grade = user?.grade || 3;
+  const coins = user?.coins ?? 0;
+  const streak = user?.streak ?? 0;
+  const avatar = user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`;
+  const grade = user?.grade || 3;
+  const coins = user?.coins ?? 0;
+  const streak = user?.streak ?? 0;
+  const avatar = user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`;
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50">
       {/* Sidebar */}
@@ -127,30 +140,21 @@ export function KidDashboard() {
         <header className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-blue-900">
-              Hi Emma! <span className="inline-block animate-bounce">👋</span>
+              Hi {name}! <span className="inline-block animate-bounce">👋</span>
             </h1>
             <p className="text-blue-600">Ready to learn today?</p>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2 shadow-soft">
-              <img
-                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Emma"
-                alt="Emma"
-                className="h-8 w-8 rounded-full"
-              />
-              <div className="text-sm">
-                <p className="font-semibold text-slate-800">Grade 3</p>
-              </div>
-            </div>
+          <div className="flex items-center gap-3">
             <div className="flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1.5 text-sm font-semibold text-amber-700">
               <Coins className="h-4 w-4" />
-              1250
+              {coins}
             </div>
             <div className="flex items-center gap-1 rounded-full bg-pink-100 px-3 py-1.5 text-sm font-semibold text-pink-700">
               <Heart className="h-4 w-4 fill-pink-500 text-pink-500" />
-              7
+              {streak}
             </div>
+            <UserMenu isKid />
           </div>
         </header>
 
@@ -199,7 +203,42 @@ export function KidDashboard() {
         {/* What do you want to learn */}
         <section className="mb-8">
           <h2 className="mb-4 text-xl font-bold text-blue-900">
-            What do you want to learn?
+            
+        {/* Daily Learning Plan */}
+        <section className="mb-8">
+          <h2 className="mb-4 text-xl font-bold text-blue-900">Today&apos;s Learning Plan</h2>
+          <div className="rounded-3xl bg-white p-6 shadow-soft">
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 rounded-2xl bg-blue-50 p-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 text-sm font-bold text-white">1</div>
+                <div className="flex-1">
+                  <p className="font-semibold text-slate-800">Math Practice</p>
+                  <p className="text-sm text-slate-500">Multiplication basics · 10 minutes</p>
+                </div>
+                <Link href="/learn/math" className="rounded-full bg-blue-500 px-4 py-1.5 text-sm font-medium text-white">Start</Link>
+              </div>
+              <div className="flex items-center gap-3 rounded-2xl bg-pink-50 p-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-pink-500 text-sm font-bold text-white">2</div>
+                <div className="flex-1">
+                  <p className="font-semibold text-slate-800">Reading + AI Coach</p>
+                  <p className="text-sm text-slate-500">Read a passage aloud · 10 minutes</p>
+                </div>
+                <Link href="/reading-coach" className="rounded-full bg-pink-500 px-4 py-1.5 text-sm font-medium text-white">Start</Link>
+              </div>
+              <div className="flex items-center gap-3 rounded-2xl bg-purple-50 p-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-500 text-sm font-bold text-white">3</div>
+                <div className="flex-1">
+                  <p className="font-semibold text-slate-800">Create a Story</p>
+                  <p className="text-sm text-slate-500">Make a unique passage or mini-book with AI</p>
+                </div>
+                <Link href="/create" className="rounded-full bg-purple-500 px-4 py-1.5 text-sm font-medium text-white">Start</Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* What do you want to learn */}
+        <h2 className="mb-4 text-xl font-bold text-blue-900">What do you want to learn?
           </h2>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
             {subjects.map((subject) => (

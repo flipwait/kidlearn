@@ -300,9 +300,24 @@ Comprehension Questions:
                       Generating...
                     </div>
                   ) : (
-                    <pre className="max-h-80 overflow-auto whitespace-pre-wrap rounded-xl bg-slate-50 p-4 text-sm text-slate-700">
-                      {generatedWorksheet}
-                    </pre>
+                    <>
+                      <pre className="max-h-80 overflow-auto whitespace-pre-wrap rounded-xl bg-slate-50 p-4 text-sm text-slate-700">
+                        {generatedWorksheet}
+                      </pre>
+                      <button
+                        onClick={() => {
+                          const w = window.open("", "_blank");
+                          if (w) {
+                            w.document.write("<pre style=\"font-family:system-ui;padding:2rem;white-space:pre-wrap;\">" + generatedWorksheet + "</pre>");
+                            w.document.close();
+                            w.print();
+                          }
+                        }}
+                        className="mt-3 w-full rounded-xl border border-slate-200 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                      >
+                        Print / Download Worksheet
+                      </button>
+                    </>
                   )}
                 </div>
               )}

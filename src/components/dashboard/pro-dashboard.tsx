@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useAuth } from "@/lib/auth-context";
+import { UserMenu } from "@/components/user-menu";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard", active: true },
@@ -40,6 +42,9 @@ const subjects = [
 ];
 
 export function ProDashboard() {
+  const { user } = useAuth();
+  const name = user?.name || "User";
+
   return (
     <div className="flex min-h-screen bg-slate-50">
       {/* Sidebar */}
@@ -92,7 +97,7 @@ export function ProDashboard() {
         <header className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">
-              Good morning, Daniel 👋
+              Good morning, {name} 👋
             </h1>
             <p className="text-slate-500">
               Here&apos;s your learning overview for today.
@@ -103,17 +108,7 @@ export function ProDashboard() {
               <Bell className="h-5 w-5" />
               <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
             </button>
-            <div className="flex items-center gap-3">
-              <img
-                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Daniel"
-                alt="Daniel"
-                className="h-9 w-9 rounded-full"
-              />
-              <div className="text-sm">
-                <p className="font-medium text-slate-800">Daniel Anderson</p>
-                <p className="text-xs text-slate-500">Parent / Student</p>
-              </div>
-            </div>
+            <UserMenu />
           </div>
         </header>
 
