@@ -200,10 +200,6 @@ export function KidDashboard() {
           </div>
         </div>
 
-        {/* What do you want to learn */}
-        <section className="mb-8">
-          <h2 className="mb-4 text-xl font-bold text-blue-900">
-            
         {/* Daily Learning Plan */}
         <section className="mb-8">
           <h2 className="mb-4 text-xl font-bold text-blue-900">Today&apos;s Learning Plan</h2>
@@ -238,7 +234,9 @@ export function KidDashboard() {
         </section>
 
         {/* What do you want to learn */}
-        <h2 className="mb-4 text-xl font-bold text-blue-900">What do you want to learn?
+        <section className="mb-8">
+          <h2 className="mb-4 text-xl font-bold text-blue-900">
+            What do you want to learn?
           </h2>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
             {subjects.map((subject) => (

@@ -1,10 +1,52 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Key, Save, Eye, EyeOff, Sparkles, BookOpen, Mic } from "lucide-react";
+import { Key, Save, Eye, EyeOff, Sparkles, Mic, Info, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
+
+const APP_VERSION = "1.2.0";
+
+const CHANGELOG = [
+  {
+    version: "1.2.0",
+    date: "Oct 12, 2026",
+    changes: [
+      "Added AI Story & Passage Creator (/create) – generate unique passages, mini-books, and stories",
+      "Adventure Mode now has a badge/sticker collection system",
+      "Added Daily Learning Plan on the Kid Dashboard",
+      "Scanner worksheets can now be printed / downloaded",
+      "User switcher menu (top-right) – switch kids, parent view, or log out",
+      "Fixed 404s on Math / Reading / Grammar / English lessons",
+      "Fixed build error in Kid Dashboard (broken JSX)",
+      "Added version number and changelog to Settings",
+    ],
+  },
+  {
+    version: "1.1.0",
+    date: "Oct 11, 2026",
+    changes: [
+      "Multi-user login with unlimited children",
+      "Grade-based content for grades 2–10",
+      "AI Tutor chat",
+      "AI Reading Coach with microphone support",
+      "Document Scanner with OCR simulation + worksheet generation",
+      "Playable games (Number Race, Fraction Pizza, Word Match, etc.)",
+      "Adventure Mode quests",
+      "High-Frequency Words manager",
+      "Improved Parent analytics dashboard",
+      "Dual theme system (Kid Mode / Professional)",
+    ],
+  },
+  {
+    version: "1.0.0",
+    date: "Oct 11, 2026",
+    changes: [
+      "Initial release – dual-theme dashboards, basic navigation, settings with OpenAI key storage",
+    ],
+  },
+];
 
 export default function SettingsPage() {
   const { resolvedTheme } = useTheme();
@@ -14,9 +56,16 @@ export default function SettingsPage() {
   const [aiTutorEnabled, setAiTutorEnabled] = useState(true);
   const [readingCoachEnabled, setReadingCoachEnabled] = useState(true);
   const [saved, setSaved] = useState(false);
+  const [showChangelog, setShowChangelog] = useState(false);
+
+  useEffect(() => {
+    const key = localStorage.getItem("openai_key") || "";
+    setApiKey(key);
+    setAiTutorEnabled(localStorage.getItem("ai_tutor") !== "false");
+    setReadingCoachEnabled(localStorage.getItem("reading_coach") !== "false");
+  }, []);
 
   const handleSave = () => {
-    // In real app: encrypt and store in DB / localStorage securely
     localStorage.setItem("openai_key", apiKey);
     localStorage.setItem("ai_tutor", String(aiTutorEnabled));
     localStorage.setItem("reading_coach", String(readingCoachEnabled));
@@ -32,15 +81,17 @@ export default function SettingsPage() {
 
       <div className="mx-auto max-w-2xl px-6 py-12">
         <div className="mb-8">
-          <Link
-            href="/dashboard"
-            className="text-sm font-medium text-blue-600 hover:underline"
-          >
+          <Link href="/dashboard" className="text-sm font-medium text-blue-600 hover:underline">
             ← Back to Dashboard
           </Link>
-          <h1 className={`mt-4 text-3xl font-bold ${isKid ? "text-blue-900" : "text-slate-900"}`}>
-            Settings
-          </h1>
+          <div className="mt-4 flex items-center gap-3">
+            <h1 className={`text-3xl font-bold ${isKid ? "text-blue-900" : "text-slate-900"}`}>
+              Settings
+            </h1>
+            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
+              v{APP_VERSION}
+            </span>
+          </div>
           <p className={isKid ? "text-blue-600" : "text-slate-500"}>
             Manage AI features and preferences
           </p>
@@ -54,7 +105,7 @@ export default function SettingsPage() {
               OpenAI API Key
             </label>
             <p className="mb-3 text-xs text-slate-500">
-              Required for AI Tutor and AI Reading Coach. Your key is stored locally and never shared.
+              Required for AI Tutor, AI Reading Coach, Story Creator, and Scanner. Stored only in your browser.
             </p>
             <div className="relative">
               <input
@@ -85,9 +136,7 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <p className="font-medium text-slate-800">AI Tutor</p>
-                  <p className="text-xs text-slate-500">
-                    Help with reading, sound out words, explain concepts
-                  </p>
+                  <p className="text-xs text-slate-500">Help with reading, sound out words, explain concepts</p>
                 </div>
               </div>
               <input
@@ -105,9 +154,7 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <p className="font-medium text-slate-800">AI Reading Coach</p>
-                  <p className="text-xs text-slate-500">
-                    Listen with headphones · accuracy, pace & mistake feedback
-                  </p>
+                  <p className="text-xs text-slate-500">Microphone · accuracy, pace & mistake feedback</p>
                 </div>
               </div>
               <input
@@ -130,6 +177,52 @@ export default function SettingsPage() {
             <Save className="h-4 w-4" />
             {saved ? "Saved!" : "Save Settings"}
           </button>
+        </div>
+
+        {/* Version & Changelog */}
+        <div className={`mt-6 rounded-2xl border p-6 shadow-sm ${isKid ? "border-blue-100 bg-white" : "border-slate-200 bg-white"}`}>
+          <button
+            onClick={() => setShowChangelog(!showChangelog)}
+            className="flex w-full items-center justify-between"
+          >
+            <div className="flex items-center gap-2">
+              <Info className="h-5 w-5 text-slate-500" />
+              <div className="text-left">
+                <p className="font-semibold text-slate-800">Version & Changelog</p>
+                <p className="text-sm text-slate-500">KidLearn v{APP_VERSION}</p>
+              </div>
+            </div>
+            {showChangelog ? (
+              <ChevronUp className="h-5 w-5 text-slate-400" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-slate-400" />
+            )}
+          </button>
+
+          {showChangelog && (
+            <div className="mt-6 space-y-6 border-t border-slate-100 pt-6">
+              {CHANGELOG.map((entry) => (
+                <div key={entry.version}>
+                  <div className="mb-2 flex items-center gap-2">
+                    <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-700">
+                      v{entry.version}
+                    </span>
+                    <span className="text-xs text-slate-400">{entry.date}</span>
+                    {entry.version === APP_VERSION && (
+                      <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                        Current
+                      </span>
+                    )}
+                  </div>
+                  <ul className="ml-4 list-disc space-y-1 text-sm text-slate-600">
+                    {entry.changes.map((change, i) => (
+                      <li key={i}>{change}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

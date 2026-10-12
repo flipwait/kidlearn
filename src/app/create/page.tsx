@@ -233,7 +233,7 @@ Comprehension Questions:
               {isGenerating ? "Creating..." : "Generate with AI"}
             </button>
 
-            {!localStorage.getItem("openai_key") && (
+            {typeof window !== "undefined" && !localStorage.getItem("openai_key") && (
               <p className="text-xs text-amber-600">
                 No API key found — will use demo content. Add your key in Settings for unique AI stories.
               </p>
