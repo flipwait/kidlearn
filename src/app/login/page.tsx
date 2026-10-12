@@ -1,27 +1,31 @@
 "use client";
 
 import { useAuth } from "@/lib/auth-context";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
 import type { Grade } from "@/types";
-import { BookOpen, UserPlus, Users, GraduationCap } from "lucide-react";
+import { UserPlus, Users, LogOut, Trash2, ArrowRight } from "lucide-react";
 
-export default function LoginPage() {
-  const { loginAsParent, loginAsChild, children, addChild, user } = useAuth();
+function LoginContent() {
+  const { loginAsParent, loginAsChild, children, addChild, user, logout } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isManage = searchParams.get("manage") === "1";
+
   const [mode, setMode] = useState<"select" | "add-child">("select");
   const [newName, setNewName] = useState("");
   const [newGrade, setNewGrade] = useState<Grade>(3);
 
-  // If already logged in, redirect
-  if (user) {
-    router.push("/dashboard");
-    return null;
-  }
+  // Only auto-redirect if logged in AND not in manage mode
+  useEffect(() => {
+    if (user && !isManage) {
+      router.replace("/dashboard");
+    }
+  }, [user, isManage, router]);
 
   const handleParentLogin = () => {
     loginAsParent();
-    router.push("/dashboard");
+    router.push("/parent");
   };
 
   const handleChildLogin = (id: string) => {
@@ -33,7 +37,22 @@ export default function LoginPage() {
     if (!newName.trim()) return;
     addChild(newName.trim(), newGrade);
     setNewName("");
+    setNewGrade(3);
     setMode("select");
+  };
+
+  const handleLogout = () => {
+    logout();
+    router.push("/login");
+  };
+
+  // Clear all children (start fresh)
+  const handleClearAll = () => {
+    if (typeof window === "undefined") return;
+    if (confirm("Remove all children and start fresh?")) {
+      localStorage.removeItem("kidlearn_auth");
+      window.location.href = "/login";
+    }
   };
 
   return (
@@ -44,11 +63,14 @@ export default function LoginPage() {
             📚
           </div>
           <h1 className="text-2xl font-bold text-slate-900">KidLearn</h1>
-          <p className="text-slate-500">Learning for Grades 2–10</p>
+          <p className="text-slate-500">
+            {isManage ? "Manage users" : "Learning for Grades 2–10"}
+          </p>
         </div>
 
         {mode === "select" ? (
           <>
+            {/* Parent option */}
             <button
               onClick={handleParentLogin}
               className="mb-4 flex w-full items-center gap-3 rounded-2xl border-2 border-slate-200 p-4 text-left transition hover:border-teal-400 hover:bg-teal-50"
@@ -56,14 +78,18 @@ export default function LoginPage() {
               <div className="rounded-xl bg-teal-100 p-3">
                 <Users className="h-6 w-6 text-teal-600" />
               </div>
-              <div>
+              <div className="flex-1">
                 <p className="font-semibold text-slate-800">Parent / Guardian</p>
                 <p className="text-sm text-slate-500">View progress & manage kids</p>
               </div>
+              <ArrowRight className="h-5 w-5 text-slate-300" />
             </button>
 
+            {/* Children list */}
             <div className="mb-4">
-              <p className="mb-2 text-sm font-medium text-slate-600">Or continue as a child:</p>
+              <p className="mb-2 text-sm font-medium text-slate-600">
+                {children.length > 0 ? "Or continue as a child:" : "No children yet — add one below"}
+              </p>
               <div className="space-y-2">
                 {children.map((child) => (
                   <button
@@ -76,33 +102,61 @@ export default function LoginPage() {
                       alt={child.name}
                       className="h-10 w-10 rounded-full"
                     />
-                    <div>
+                    <div className="flex-1">
                       <p className="font-semibold text-slate-800">{child.name}</p>
                       <p className="text-sm text-slate-500">Grade {child.grade}</p>
                     </div>
+                    <ArrowRight className="h-5 w-5 text-slate-300" />
                   </button>
                 ))}
               </div>
             </div>
 
             <button
-              onClick={() => setMode("add-child")}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-100 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-200"
+              onClick={() => {
+                setNewName("");
+                setNewGrade(3);
+                setMode("add-child");
+              }}
+              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-500 py-3 text-sm font-medium text-white transition hover:bg-blue-600"
             >
               <UserPlus className="h-4 w-4" />
-              Add another child
+              Add a child
             </button>
+
+            {(isManage || user) && (
+              <div className="mt-4 flex gap-2">
+                <button
+                  onClick={handleLogout}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-slate-200 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Log out
+                </button>
+                <button
+                  onClick={handleClearAll}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-red-100 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Start fresh
+                </button>
+              </div>
+            )}
           </>
         ) : (
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-slate-800">Add a Child</h2>
+            <p className="text-sm text-slate-500">
+              Enter the child&apos;s name and grade. The form starts blank so each kid can fill it in.
+            </p>
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-600">Name</label>
               <input
                 type="text"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                placeholder="Child's name"
+                placeholder="Type name here..."
+                autoFocus
                 className="w-full rounded-xl border border-slate-200 px-4 py-3 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
               />
             </div>
@@ -129,7 +183,8 @@ export default function LoginPage() {
               </button>
               <button
                 onClick={handleAddChild}
-                className="flex-1 rounded-xl bg-blue-500 py-3 font-medium text-white hover:bg-blue-600"
+                disabled={!newName.trim()}
+                className="flex-1 rounded-xl bg-blue-500 py-3 font-medium text-white hover:bg-blue-600 disabled:opacity-50"
               >
                 Add Child
               </button>
@@ -138,9 +193,21 @@ export default function LoginPage() {
         )}
 
         <p className="mt-6 text-center text-xs text-slate-400">
-          Demo mode — data is stored in your browser. Unlimited children supported.
+          Data is stored in this browser only. Unlimited children supported.
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }

@@ -21,7 +21,7 @@ const STORAGE_KEY = "kidlearn_auth";
 
 export function AuthProvider({ children: reactChildren }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [familyChildren, setFamilyChildren] = useState<User[]>(mockChildren);
+  const [familyChildren, setFamilyChildren] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

@@ -136,6 +136,19 @@ export default function WordsPage() {
           </div>
         )}
 
+        
+        {/* Spaced repetition hint */}
+        <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4">
+          <p className="text-sm font-semibold text-amber-800">📅 Spaced practice tip</p>
+          <p className="mt-1 text-sm text-amber-700">
+            Words you have not marked as mastered yet are due for review today.
+            Practice saying them out loud, then mark them when you know them well!
+          </p>
+          <p className="mt-2 text-xs text-amber-600">
+            {(words.filter((w) => !w.mastered).length)} word(s) still learning
+          </p>
+        </div>
+
         {/* Filters */}
         <div className="mb-4 flex gap-2">
           {(["all", "learning", "mastered"] as const).map((f) => (

@@ -6,21 +6,33 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Key, Save, Eye, EyeOff, Sparkles, Mic, Info, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 
-const APP_VERSION = "1.2.0";
+const APP_VERSION = "1.4.0";
 
 const CHANGELOG = [
+  {
+    version: "1.3.0",
+    date: "Oct 12, 2026",
+    changes: [
+      "Fully interactive Adventure Mode – story map, lives, coins, stars, multi-question quests",
+      "Grade-scaled adventure questions (easier for grade 2–3, harder for 6+)",
+      "Unlock path: clear each land to open the next",
+      "New badges: Perfect Run, Speed Star, First Steps",
+      "Reading Book Library with full stories + comprehension quizzes",
+      "Blank login form for kids to enter their own names",
+      "Manage Users mode from profile menu",
+    ],
+  },
   {
     version: "1.2.0",
     date: "Oct 12, 2026",
     changes: [
-      "Added AI Story & Passage Creator (/create) – generate unique passages, mini-books, and stories",
-      "Adventure Mode now has a badge/sticker collection system",
-      "Added Daily Learning Plan on the Kid Dashboard",
-      "Scanner worksheets can now be printed / downloaded",
-      "User switcher menu (top-right) – switch kids, parent view, or log out",
-      "Fixed 404s on Math / Reading / Grammar / English lessons",
-      "Fixed build error in Kid Dashboard (broken JSX)",
-      "Added version number and changelog to Settings",
+      "Added AI Story & Passage Creator (/create)",
+      "Adventure Mode badge system",
+      "Daily Learning Plan on Kid Dashboard",
+      "Scanner print/download worksheets",
+      "User switcher menu",
+      "Fixed lesson 404s and build errors",
+      "Version + changelog in Settings",
     ],
   },
   {
@@ -55,6 +67,7 @@ export default function SettingsPage() {
   const [showKey, setShowKey] = useState(false);
   const [aiTutorEnabled, setAiTutorEnabled] = useState(true);
   const [readingCoachEnabled, setReadingCoachEnabled] = useState(true);
+  const [helperMode, setHelperMode] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showChangelog, setShowChangelog] = useState(false);
 
@@ -63,12 +76,15 @@ export default function SettingsPage() {
     setApiKey(key);
     setAiTutorEnabled(localStorage.getItem("ai_tutor") !== "false");
     setReadingCoachEnabled(localStorage.getItem("reading_coach") !== "false");
+    setHelperMode(localStorage.getItem("kidlearn_helper") === "true");
   }, []);
 
   const handleSave = () => {
     localStorage.setItem("openai_key", apiKey);
     localStorage.setItem("ai_tutor", String(aiTutorEnabled));
     localStorage.setItem("reading_coach", String(readingCoachEnabled));
+    localStorage.setItem("kidlearn_helper", String(helperMode));
+    if (helperMode) localStorage.setItem("kidlearn_badges", JSON.stringify(Array.from(new Set([...(JSON.parse(localStorage.getItem("kidlearn_badges") || "[]")), "helper"]))));
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -165,6 +181,25 @@ export default function SettingsPage() {
               />
             </label>
           </div>
+
+          
+          <label className="flex cursor-pointer items-center justify-between rounded-xl border border-slate-100 p-4 hover:bg-slate-50">
+              <div className="flex items-center gap-3">
+                <div className="rounded-lg bg-pink-100 p-2">
+                  <span className="text-lg">💜</span>
+                </div>
+                <div>
+                  <p className="font-medium text-slate-800">Helper Mode</p>
+                  <p className="text-xs text-slate-500">Bigger buttons & simpler layout for younger kids</p>
+                </div>
+              </div>
+              <input
+                type="checkbox"
+                checked={helperMode}
+                onChange={(e) => setHelperMode(e.target.checked)}
+                className="h-5 w-5 rounded accent-blue-500"
+              />
+            </label>
 
           <button
             onClick={handleSave}

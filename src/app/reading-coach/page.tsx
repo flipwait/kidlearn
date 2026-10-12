@@ -64,6 +64,8 @@ export default function ReadingCoachPage() {
   const [mistakes, setMistakes] = useState<string[]>([]);
   const [sessionProgress, setSessionProgress] = useState(0);
   const [speechSupported, setSpeechSupported] = useState(true);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [selectedVoice, setSelectedVoice] = useState("");
   const [startTime, setStartTime] = useState<number | null>(null);
   const recognitionRef = useRef<any>(null);
 
@@ -73,6 +75,13 @@ export default function ReadingCoachPage() {
     if (!SpeechRecognition) {
       setSpeechSupported(false);
     }
+    const loadVoices = () => {
+      const v = window.speechSynthesis?.getVoices() || [];
+      setVoices(v.filter((x) => x.lang.startsWith("en")));
+    };
+    loadVoices();
+    window.speechSynthesis?.addEventListener("voiceschanged", loadVoices);
+    return () => window.speechSynthesis?.removeEventListener("voiceschanged", loadVoices);
   }, []);
 
   const analyzeReading = (spoken: string) => {
@@ -108,6 +117,7 @@ export default function ReadingCoachPage() {
     setMistakes(foundMistakes.slice(0, 6));
     setSessionProgress(Math.min(100, Math.round((spokenWords.length / originalWords.length) * 100)));
     setHasStarted(true);
+    try { localStorage.setItem("kidlearn_coach_used", "1"); } catch {}
   };
 
   const startListening = () => {

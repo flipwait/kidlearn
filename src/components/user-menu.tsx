@@ -37,7 +37,7 @@ export function UserMenu({ isKid = false }: { isKid?: boolean }) {
   const handleLogout = () => {
     logout();
     setOpen(false);
-    router.push("/login");
+    router.push("/login?manage=1");
   };
 
   return (
@@ -107,7 +107,7 @@ export function UserMenu({ isKid = false }: { isKid?: boolean }) {
               </button>
             )}
             <button
-              onClick={() => { setOpen(false); router.push("/login"); }}
+              onClick={() => { setOpen(false); router.push("/login?manage=1"); }}
               className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm hover:bg-slate-50"
             >
               <UserPlus className="h-4 w-4 text-slate-500" />

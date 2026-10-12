@@ -26,6 +26,9 @@ const navItems = [
   { icon: Sparkles, label: "AI Tutor", href: "/ai-tutor" },
   { icon: Sparkles, label: "Create Stories", href: "/create" },
   { icon: Gamepad2, label: "Games", href: "/games" },
+  { icon: Map, label: "Adventure", href: "/adventure" },
+  { icon: Star, label: "Stickers", href: "/stickers" },
+  { icon: Trophy, label: "Challenges", href: "/challenges" },
   { icon: BookOpen, label: "Words", href: "/words" },
   { icon: Shield, label: "Parents", href: "/parent" },
   { icon: Settings, label: "Settings", href: "/settings" },
@@ -223,6 +226,7 @@ export function KidDashboard() {
                   <p className="font-semibold text-slate-800">Create a Story</p>
                   <p className="text-sm text-slate-500">Make a unique passage or mini-book with AI</p>
                 </div>
+                <Link href="/avatar" className="rounded-full bg-indigo-500 px-4 py-1.5 text-sm font-medium text-white">Avatar</Link>
                 <Link href="/create" className="rounded-full bg-purple-500 px-4 py-1.5 text-sm font-medium text-white">Start</Link>
               </div>
             </div>

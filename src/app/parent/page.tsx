@@ -1,5 +1,7 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
+
 import { useTheme } from "next-themes";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -186,6 +188,16 @@ export default function ParentPage() {
           </div>
         </div>
 
+        
+        {/* Parent Goals */}
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
+          <h2 className="mb-4 flex items-center gap-2 font-semibold text-slate-800">
+            <Target className="h-5 w-5 text-teal-500" /> Parent Goals
+          </h2>
+          <p className="mb-4 text-sm text-slate-500">Set simple weekly goals for your children. They will appear on the Daily Plan.</p>
+          <ParentGoalsEditor />
+        </div>
+
         <p className="mt-8 text-center text-sm text-slate-400">
           Data shown is demo data. In production this connects to real progress tracking.
         </p>
@@ -193,3 +205,43 @@ export default function ParentPage() {
     </div>
   );
 }
+
+function ParentGoalsEditor() {
+  const [goals, setGoals] = useState<string[]>([]);
+  const [text, setText] = useState("");
+  useEffect(() => {
+    try {
+      const s = localStorage.getItem("kidlearn_parent_goals");
+      if (s) setGoals(JSON.parse(s));
+    } catch {}
+  }, []);
+  const save = (next: string[]) => {
+    setGoals(next);
+    localStorage.setItem("kidlearn_parent_goals", JSON.stringify(next));
+  };
+  return (
+    <div className="space-y-3">
+      {goals.map((g, i) => (
+        <div key={i} className="flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-sm">
+          <span className="flex-1 text-slate-700">{g}</span>
+          <button onClick={() => save(goals.filter((_, j) => j !== i))} className="text-red-500 text-xs">Remove</button>
+        </div>
+      ))}
+      <div className="flex gap-2">
+        <input
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="e.g. Practice fractions 3 times this week"
+          className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm"
+        />
+        <button
+          onClick={() => { if (text.trim()) { save([...goals, text.trim()]); setText(""); } }}
+          className="rounded-xl bg-teal-600 px-4 py-2 text-sm font-medium text-white"
+        >
+          Add Goal
+        </button>
+      </div>
+    </div>
+  );
+}
+
