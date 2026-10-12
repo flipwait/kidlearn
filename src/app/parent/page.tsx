@@ -11,13 +11,13 @@ import {
   Calculator, PenTool, MessageCircle, Activity, Target, Calendar
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { progressData, children as mockChildren } from "@/lib/mock-data";
+import { progressData } from "@/lib/mock-data";
 
 export default function ParentPage() {
   const { resolvedTheme } = useTheme();
   const { children: familyChildren, user } = useAuth();
   const isKid = resolvedTheme === "kid";
-  const kids = familyChildren.length ? familyChildren : mockChildren;
+  const kids = familyChildren;
 
   // Sample richer analytics data
   const weeklyTime = [
@@ -50,7 +50,16 @@ export default function ParentPage() {
 
         {/* Kids overview cards */}
         <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {kids.map((kid) => {
+          {kids.length === 0 && (
+          <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-8 text-center">
+            <p className="font-medium text-slate-700">No children yet</p>
+            <p className="mt-1 text-sm text-slate-500">Add a child from the login screen so progress can show here.</p>
+            <Link href="/login?manage=1" className="mt-4 inline-block text-sm font-medium text-teal-600 hover:underline">
+              Add a child →
+            </Link>
+          </div>
+        )}
+        {kids.map((kid) => {
             const kidProgress = progressData.filter((p) => p.userId === kid.id);
             const avgMastery = kidProgress.length
               ? Math.round(kidProgress.reduce((s, p) => s + p.mastery, 0) / kidProgress.length)

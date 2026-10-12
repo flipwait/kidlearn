@@ -24,21 +24,21 @@ import { UserMenu } from "@/components/user-menu";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard", active: true },
-  { icon: BookOpen, label: "Courses", href: "/learn" },
-  { icon: ClipboardList, label: "Assignments", href: "/assignments" },
-  { icon: BarChart3, label: "Progress", href: "/progress" },
-  { icon: FolderOpen, label: "Resources", href: "/resources" },
-  { icon: MessageSquare, label: "Messages", href: "/messages" },
-  { icon: Calendar, label: "Calendar", href: "/calendar" },
-  { icon: FileText, label: "Reports", href: "/reports" },
+  { icon: BookOpen, label: "Lessons", href: "/learn" },
+  { icon: ClipboardList, label: "Challenges", href: "/challenges" },
+  { icon: BarChart3, label: "Parent View", href: "/parent" },
+  { icon: FolderOpen, label: "Word Bank", href: "/words" },
+  { icon: MessageSquare, label: "AI Tutor", href: "/ai-tutor" },
+  { icon: Calendar, label: "Adventure", href: "/adventure" },
+  { icon: FileText, label: "Print Pack", href: "/print-pack" },
   { icon: Settings, label: "Settings", href: "/settings" },
 ];
 
 const subjects = [
-  { name: "Math", mastery: 72, status: "Strong", color: "bg-teal-500" },
-  { name: "Reading", mastery: 65, status: "Good", color: "bg-blue-500" },
-  { name: "Grammar", mastery: 58, status: "Developing", color: "bg-purple-500" },
-  { name: "English", mastery: 70, status: "Strong", color: "bg-emerald-500" },
+  { name: "Math", mastery: 72, status: "Strong", color: "bg-teal-500", href: "/learn/math" },
+  { name: "Reading", mastery: 65, status: "Good", color: "bg-blue-500", href: "/learn/reading" },
+  { name: "Grammar", mastery: 58, status: "Developing", color: "bg-purple-500", href: "/learn/grammar" },
+  { name: "English", mastery: 70, status: "Strong", color: "bg-emerald-500", href: "/learn/english" },
 ];
 
 export function ProDashboard() {
@@ -145,7 +145,7 @@ export function ProDashboard() {
           <div className="rounded-xl border border-slate-200 bg-white p-6 lg:col-span-2">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="font-semibold text-slate-900">Recent Activity</h2>
-              <Link href="/activity" className="text-sm text-teal-600 hover:underline">
+              <Link href="/learn" className="text-sm text-teal-600 hover:underline">
                 View All
               </Link>
             </div>
@@ -193,7 +193,7 @@ export function ProDashboard() {
           <div className="rounded-xl border border-slate-200 bg-white p-6">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="font-semibold text-slate-900">Time Spent This Week</h2>
-              <Link href="/reports" className="text-sm text-teal-600 hover:underline">
+              <Link href="/parent" className="text-sm text-teal-600 hover:underline">
                 View Report
               </Link>
             </div>
@@ -231,15 +231,16 @@ export function ProDashboard() {
         <div className="mt-6 rounded-xl border border-slate-200 bg-white p-6">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="font-semibold text-slate-900">Subject Mastery</h2>
-            <Link href="/progress" className="text-sm text-teal-600 hover:underline">
+            <Link href="/learn" className="text-sm text-teal-600 hover:underline">
               View All Subjects
             </Link>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {subjects.map((s) => (
-              <div
+              <Link
                 key={s.name}
-                className="rounded-lg border border-slate-100 p-4"
+                href={s.href}
+                className="rounded-lg border border-slate-100 p-4 transition hover:border-teal-300 hover:bg-teal-50/50"
               >
                 <div className="mb-2 flex items-center justify-between">
                   <span className="font-medium text-slate-800">{s.name}</span>
@@ -254,7 +255,7 @@ export function ProDashboard() {
                   />
                 </div>
                 <p className="text-xs text-slate-500">{s.status}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

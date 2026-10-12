@@ -7,10 +7,9 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 import { BookOpen, Plus, Trash2, Check, Upload, Type } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { highFrequencyWords as initialWords } from "@/lib/mock-data";
 import type { HighFrequencyWord, Grade } from "@/types";
 
-const STORAGE_KEY = "kidlearn_hf_words";
+const STORAGE_KEY = "kidlearn_words";
 
 export default function WordsPage() {
   const { resolvedTheme } = useTheme();
@@ -18,7 +17,7 @@ export default function WordsPage() {
   const isKid = resolvedTheme === "kid";
   const grade = (user?.grade || 3) as Grade;
 
-  const [words, setWords] = useState<HighFrequencyWord[]>(initialWords);
+  const [words, setWords] = useState<HighFrequencyWord[]>([]);
   const [newWord, setNewWord] = useState("");
   const [bulkText, setBulkText] = useState("");
   const [mode, setMode] = useState<"list" | "add" | "bulk">("list");

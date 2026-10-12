@@ -7,7 +7,7 @@ import type { Grade } from "@/types";
 import { UserPlus, Users, LogOut, Trash2, ArrowRight } from "lucide-react";
 
 function LoginContent() {
-  const { loginAsParent, loginAsChild, children, addChild, user, logout } = useAuth();
+  const { loginAsParent, loginAsChild, children, addChild, user, logout, clearAllData } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const isManage = searchParams.get("manage") === "1";
@@ -49,8 +49,8 @@ function LoginContent() {
   // Clear all children (start fresh)
   const handleClearAll = () => {
     if (typeof window === "undefined") return;
-    if (confirm("Remove all children and start fresh?")) {
-      localStorage.removeItem("kidlearn_auth");
+    if (confirm("Erase all kids, progress, badges, and challenges so everyone starts completely fresh?")) {
+      clearAllData();
       window.location.href = "/login";
     }
   };
