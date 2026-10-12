@@ -89,10 +89,6 @@ export function KidDashboard() {
   const coins = user?.coins ?? 0;
   const streak = user?.streak ?? 0;
   const avatar = user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`;
-  const grade = user?.grade || 3;
-  const coins = user?.coins ?? 0;
-  const streak = user?.streak ?? 0;
-  const avatar = user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`;
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50">
       {/* Sidebar */}
