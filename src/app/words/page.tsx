@@ -19,6 +19,7 @@ export default function WordsPage() {
 
   const [words, setWords] = useState<HighFrequencyWord[]>([]);
   const [newWord, setNewWord] = useState("");
+  const [wordKind, setWordKind] = useState<"hf" | "spelling">("hf");
   const [bulkText, setBulkText] = useState("");
   const [mode, setMode] = useState<"list" | "add" | "bulk">("list");
   const [filter, setFilter] = useState<"all" | "mastered" | "learning">("all");
@@ -42,6 +43,7 @@ export default function WordsPage() {
       word: newWord.trim().toLowerCase(),
       grade,
       mastered: false,
+      kind: wordKind,
     };
     persist([w, ...words]);
     setNewWord("");
@@ -59,6 +61,7 @@ export default function WordsPage() {
       word,
       grade,
       mastered: false,
+      kind: wordKind,
     }));
     persist([...newOnes, ...words]);
     setBulkText("");
@@ -111,6 +114,10 @@ export default function WordsPage() {
         {mode === "add" && (
           <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-5">
             <h3 className="mb-3 font-semibold">Add a word</h3>
+            <div className="mb-2 flex gap-2">
+              <button type="button" onClick={() => setWordKind("hf")} className={`rounded-lg px-3 py-1 text-xs font-medium ${wordKind === "hf" ? "bg-teal-600 text-white" : "bg-slate-100"}`}>High-frequency</button>
+              <button type="button" onClick={() => setWordKind("spelling")} className={`rounded-lg px-3 py-1 text-xs font-medium ${wordKind === "spelling" ? "bg-teal-600 text-white" : "bg-slate-100"}`}>Spelling</button>
+            </div>
             <div className="flex gap-2">
               <input value={newWord} onChange={(e) => setNewWord(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addWord()}
                 placeholder="Type a word..." className="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:border-blue-400 focus:outline-none" />

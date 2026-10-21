@@ -23,7 +23,7 @@ export function UserMenu({ isKid = false }: { isKid?: boolean }) {
   if (!user) return null;
 
   const handleSwitch = (childId: string) => {
-    loginAsChild(childId);
+    loginAsChild(childId); // PIN not required when already in family session
     setOpen(false);
     router.push("/dashboard");
   };

@@ -1,6 +1,6 @@
 export type Grade = 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
-export type Subject = "math" | "reading" | "grammar" | "english";
+export type Subject = "reading" | "reading-games" | "printables" | "stories";
 
 export interface User {
   id: string;
@@ -11,6 +11,8 @@ export interface User {
   coins?: number;
   streak?: number;
   parentId?: string;
+  /** Simple PIN for student login (4 digits). Parent has no PIN required in MVP. */
+  pin?: string;
 }
 
 export interface Progress {
@@ -18,7 +20,7 @@ export interface Progress {
   subject: Subject;
   completedLessons: number;
   totalLessons: number;
-  mastery: number; // 0-100
+  mastery: number;
   lastActivity: string;
   timeSpentMinutes: number;
 }
@@ -28,6 +30,22 @@ export interface HighFrequencyWord {
   word: string;
   grade: Grade;
   mastered: boolean;
+  /** spelling list vs high-frequency */
+  kind?: "hf" | "spelling";
+}
+
+export interface Assignment {
+  id: string;
+  userId: string;
+  title: string;
+  type: "reading" | "game" | "printable" | "story" | "practice";
+  /** Required minutes */
+  requiredMinutes: number;
+  /** Seconds actually spent with timer running */
+  elapsedSeconds: number;
+  completed: boolean;
+  createdAt: string;
+  completedAt?: string;
 }
 
 export interface DailyQuest {

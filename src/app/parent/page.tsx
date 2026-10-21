@@ -15,7 +15,7 @@ import { progressData } from "@/lib/mock-data";
 
 export default function ParentPage() {
   const { resolvedTheme } = useTheme();
-  const { children: familyChildren, user } = useAuth();
+  const { children: familyChildren, user, getProgressForUser, addAssignment } = useAuth();
   const isKid = resolvedTheme === "kid";
   const kids = familyChildren;
 

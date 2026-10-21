@@ -1,35 +1,24 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { Moon, Sun, Sparkles } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/** Light / dark only — kid mode removed */
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-
-  const isKid = theme === "kid";
+  const { resolvedTheme, setTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   return (
     <button
-      onClick={() => setTheme(isKid ? "professional" : "kid")}
+      onClick={() => setTheme(isDark ? "light" : "dark")}
       className={cn(
-        "flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium shadow-lg transition-all",
-        isKid
-          ? "bg-gradient-to-r from-pink-400 to-purple-500 text-white hover:from-pink-500 hover:to-purple-600"
-          : "bg-slate-800 text-white hover:bg-slate-700"
+        "flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium shadow-md transition",
+        "bg-slate-800 text-white hover:bg-slate-700"
       )}
+      aria-label="Toggle theme"
     >
-      {isKid ? (
-        <>
-          <Moon className="h-4 w-4" />
-          <span>Pro Mode</span>
-        </>
-      ) : (
-        <>
-          <Sparkles className="h-4 w-4" />
-          <span>Kid Mode</span>
-        </>
-      )}
+      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
     </button>
   );
 }

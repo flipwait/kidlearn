@@ -18,9 +18,9 @@ export default function RootLayout({
       <body className="min-h-screen antialiased">
         <ThemeProvider
           attribute="class"
-          defaultTheme="professional"
+          defaultTheme="light"
           enableSystem={false}
-          themes={["professional", "kid"]}
+          themes={["light", "dark"]}
         >
           <AuthProvider>
             {children}

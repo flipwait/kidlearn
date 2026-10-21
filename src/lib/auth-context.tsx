@@ -1,51 +1,34 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import type { User, Grade } from "@/types";
+import type { User, Grade, Assignment } from "@/types";
 
 interface AuthContextType {
   user: User | null;
   children: User[];
   isLoading: boolean;
   loginAsParent: () => void;
-  loginAsChild: (childId: string) => void;
+  loginAsChild: (childId: string, pin?: string) => boolean;
   logout: () => void;
-  addChild: (name: string, grade: Grade) => void;
+  addChild: (name: string, grade: Grade, pin: string) => void;
   switchChild: (childId: string) => void;
   clearAllData: () => void;
+  assignments: Assignment[];
+  addAssignment: (a: Omit<Assignment, "id" | "elapsedSeconds" | "completed" | "createdAt">) => void;
+  tickAssignment: (id: string, seconds: number) => void;
+  completeAssignment: (id: string) => void;
+  getProgressForUser: (userId: string) => { completed: number; totalMinutes: number; assignments: Assignment[] };
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const STORAGE_KEY = "kidlearn_auth";
+const ASSIGNMENTS_KEY = "kidlearn_assignments";
 
-/** Remove every KidLearn key so a family truly starts fresh */
 export function clearAllKidLearnData() {
   if (typeof window === "undefined") return;
-  const keys = Object.keys(localStorage).filter((k) => k.startsWith("kidlearn"));
-  keys.forEach((k) => localStorage.removeItem(k));
-  // also common feature keys
-  ["openai_key", "ai_tutor", "reading_coach"].forEach((k) => {
-    // keep openai_key? User might want to keep API key. Only clear learning data.
-  });
-  // Clear learning-related only; leave openai_key alone
-  [
-    STORAGE_KEY,
-    "kidlearn_badges",
-    "kidlearn_weekly_progress",
-    "kidlearn_parent_goals",
-    "kidlearn_helper",
-    "kidlearn_words",
-    "kidlearn_adventure_best",
-    "kidlearn_read_books",
-    "kidlearn_games_won",
-    "kidlearn_created_story",
-    "kidlearn_coach_used",
-    "kidlearn_scanned",
-  ].forEach((k) => localStorage.removeItem(k));
-  // Avatar configs per user
   Object.keys(localStorage)
-    .filter((k) => k.startsWith("kidlearn_avatar"))
+    .filter((k) => k.startsWith("kidlearn"))
     .forEach((k) => localStorage.removeItem(k));
 }
 
@@ -59,6 +42,7 @@ const defaultParent: User = {
 export function AuthProvider({ children: reactChildren }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [familyChildren, setFamilyChildren] = useState<User[]>([]);
+  const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -69,7 +53,8 @@ export function AuthProvider({ children: reactChildren }: { children: React.Reac
         setUser(parsed.user ?? null);
         setFamilyChildren(Array.isArray(parsed.children) ? parsed.children : []);
       }
-      // No saved data → empty family (fresh start)
+      const a = localStorage.getItem(ASSIGNMENTS_KEY);
+      if (a) setAssignments(JSON.parse(a));
     } catch (e) {
       console.error("Failed to load auth", e);
     }
@@ -80,17 +65,27 @@ export function AuthProvider({ children: reactChildren }: { children: React.Reac
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: u, children: kids }));
   };
 
+  const persistAssignments = (list: Assignment[]) => {
+    setAssignments(list);
+    localStorage.setItem(ASSIGNMENTS_KEY, JSON.stringify(list));
+  };
+
   const loginAsParent = () => {
     const parent = { ...defaultParent };
     setUser(parent);
     persist(parent, familyChildren);
   };
 
-  const loginAsChild = (childId: string) => {
+  /** Returns false if PIN is wrong */
+  const loginAsChild = (childId: string, pin?: string): boolean => {
     const child = familyChildren.find((c) => c.id === childId);
-    if (!child) return; // no demo fallback
+    if (!child) return false;
+    // Require PIN only when provided attempt from login screen (pin argument passed)
+    // undefined pin = trusted switch from parent session / menu
+    if (pin !== undefined && child.pin && pin !== child.pin) return false;
     setUser(child);
     persist(child, familyChildren);
+    return true;
   };
 
   const logout = () => {
@@ -98,7 +93,7 @@ export function AuthProvider({ children: reactChildren }: { children: React.Reac
     localStorage.removeItem(STORAGE_KEY);
   };
 
-  const addChild = (name: string, grade: Grade) => {
+  const addChild = (name: string, grade: Grade, pin: string) => {
     const newChild: User = {
       id: `child-${Date.now()}`,
       name: name.trim(),
@@ -108,10 +103,10 @@ export function AuthProvider({ children: reactChildren }: { children: React.Reac
       coins: 0,
       streak: 0,
       parentId: defaultParent.id,
+      pin: pin.trim() || "0000",
     };
     const updated = [...familyChildren, newChild];
     setFamilyChildren(updated);
-    // Stay on manage screen; don't force login
     persist(user, updated);
   };
 
@@ -123,6 +118,45 @@ export function AuthProvider({ children: reactChildren }: { children: React.Reac
     clearAllKidLearnData();
     setUser(null);
     setFamilyChildren([]);
+    setAssignments([]);
+  };
+
+  const addAssignment = (a: Omit<Assignment, "id" | "elapsedSeconds" | "completed" | "createdAt">) => {
+    const item: Assignment = {
+      ...a,
+      id: `asg-${Date.now()}`,
+      elapsedSeconds: 0,
+      completed: false,
+      createdAt: new Date().toISOString(),
+    };
+    persistAssignments([item, ...assignments]);
+  };
+
+  const tickAssignment = (id: string, seconds: number) => {
+    persistAssignments(
+      assignments.map((x) =>
+        x.id === id ? { ...x, elapsedSeconds: x.elapsedSeconds + seconds } : x
+      )
+    );
+  };
+
+  const completeAssignment = (id: string) => {
+    persistAssignments(
+      assignments.map((x) =>
+        x.id === id
+          ? { ...x, completed: true, completedAt: new Date().toISOString() }
+          : x
+      )
+    );
+  };
+
+  const getProgressForUser = (userId: string) => {
+    const list = assignments.filter((a) => a.userId === userId);
+    const completed = list.filter((a) => a.completed).length;
+    const totalMinutes = Math.round(
+      list.reduce((s, a) => s + a.elapsedSeconds, 0) / 60
+    );
+    return { completed, totalMinutes, assignments: list };
   };
 
   return (
@@ -137,6 +171,11 @@ export function AuthProvider({ children: reactChildren }: { children: React.Reac
         addChild,
         switchChild,
         clearAllData,
+        assignments,
+        addAssignment,
+        tickAssignment,
+        completeAssignment,
+        getProgressForUser,
       }}
     >
       {reactChildren}
