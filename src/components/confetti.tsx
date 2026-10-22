@@ -27,6 +27,12 @@ export function Confetti({ show, onDone }: { show: boolean; onDone?: () => void 
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[100] overflow-hidden">
+      <style>{`
+        @keyframes confetti-fall {
+          0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+          100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+      `}</style>
       {pieces.map((p) => (
         <span
           key={p.id}
@@ -40,12 +46,6 @@ export function Confetti({ show, onDone }: { show: boolean; onDone?: () => void 
           }}
         />
       ))}
-      <style jsx global>{`
-        @keyframes confetti-fall {
-          0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
-          100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-        }
-      `}</style>
     </div>
   );
 }
@@ -53,7 +53,7 @@ export function Confetti({ show, onDone }: { show: boolean; onDone?: () => void 
 export function playSuccessSound() {
   try {
     const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const notes = [523.25, 659.25, 783.99]; // C E G
+    const notes = [523.25, 659.25, 783.99];
     notes.forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();

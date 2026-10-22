@@ -1,6 +1,14 @@
 export type Grade = 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
-export type Subject = "reading" | "reading-games" | "printables" | "stories";
+/** Learning areas used across the app */
+export type Subject =
+  | "reading"
+  | "reading-games"
+  | "printables"
+  | "stories"
+  | "math"
+  | "grammar"
+  | "english";
 
 export interface User {
   id: string;
@@ -11,7 +19,7 @@ export interface User {
   coins?: number;
   streak?: number;
   parentId?: string;
-  /** Simple PIN for student login (4 digits). Parent has no PIN required in MVP. */
+  /** Simple PIN for student login (4 digits) */
   pin?: string;
 }
 
@@ -39,9 +47,7 @@ export interface Assignment {
   userId: string;
   title: string;
   type: "reading" | "game" | "printable" | "story" | "practice";
-  /** Required minutes */
   requiredMinutes: number;
-  /** Seconds actually spent with timer running */
   elapsedSeconds: number;
   completed: boolean;
   createdAt: string;

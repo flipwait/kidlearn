@@ -60,35 +60,32 @@ export default function ParentPage() {
           </div>
         )}
         {kids.map((kid) => {
-            const kidProgress = progressData.filter((p) => p.userId === kid.id);
-            const avgMastery = kidProgress.length
-              ? Math.round(kidProgress.reduce((s, p) => s + p.mastery, 0) / kidProgress.length)
-              : kid.grade === 3 ? 78 : 86;
+            const real = getProgressForUser(kid.id);
+            const completed = real.completed;
+            const mins = real.totalMinutes;
             return (
               <div key={kid.id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div className="flex items-center gap-3">
                   <img src={kid.avatar} alt={kid.name} className="h-12 w-12 rounded-full" />
                   <div className="flex-1">
                     <p className="font-semibold text-slate-800">{kid.name}</p>
-                    <p className="text-sm text-slate-500">Grade {kid.grade} · Streak {kid.streak || 0} days</p>
+                    <p className="text-sm text-slate-500">Grade {kid.grade}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-2xl font-bold text-teal-600">{avgMastery}%</p>
-                    <p className="text-xs text-slate-500">Overall</p>
+                    <p className="text-2xl font-bold text-teal-600">{completed}</p>
+                    <p className="text-xs text-slate-500">Done</p>
                   </div>
                 </div>
-                <div className="mt-4 grid grid-cols-4 gap-2 text-center text-xs">
-                  {["Math", "Reading", "Grammar", "English"].map((subj, i) => {
-                    const val = kidProgress[i]?.mastery ?? (60 + i * 8);
-                    return (
-                      <div key={subj}>
-                        <div className="mx-auto mb-1 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
-                          <div className="h-full rounded-full bg-teal-500" style={{ width: `${val}%` }} />
-                        </div>
-                        <span className="text-slate-500">{subj.slice(0, 4)}</span>
+                <div className="mt-4 grid grid-cols-2 gap-2 text-center text-xs">
+                  {[
+                    { label: "Completed", val: completed },
+                    { label: "Minutes", val: mins },
+                  ].map((item) => (
+                      <div key={item.label} className="rounded-lg bg-slate-50 py-2">
+                        <p className="text-lg font-semibold text-slate-800">{item.val}</p>
+                        <span className="text-slate-500">{item.label}</span>
                       </div>
-                    );
-                  })}
+                    ))}
                 </div>
               </div>
             );
