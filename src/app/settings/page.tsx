@@ -6,7 +6,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Key, Save, Eye, EyeOff, Sparkles, Mic, Info, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 
-const APP_VERSION = "2.0.1";
+const APP_VERSION = "2.1.0";
 
 const CHANGELOG = [
   {
