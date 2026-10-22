@@ -6,7 +6,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Key, Save, Eye, EyeOff, Sparkles, Mic, Info, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 
-const APP_VERSION = "2.1.0";
+const APP_VERSION = "2.2.0";
 
 const CHANGELOG = [
   {
@@ -224,7 +224,7 @@ export default function SettingsPage() {
               <Info className="h-5 w-5 text-slate-500" />
               <div className="text-left">
                 <p className="font-semibold text-slate-800">Version & Changelog</p>
-                <p className="text-sm text-slate-500">KidLearn v{APP_VERSION}</p>
+                <p className="text-sm text-slate-500">TutorMe v{APP_VERSION}</p>
               </div>
             </div>
             {showChangelog ? (

@@ -67,7 +67,7 @@ Plain text, clear sections, ready to print.`;
 
     if (!apiKey) {
       setTimeout(() => {
-        setResult(`KidLearn Printable — Grade ${grade}
+        setResult(`TutorMe Printable — Grade ${grade}
 ================================
 Words to practice: ${wordList.length ? wordList.join(", ") : "the, said, could, would, there, their"}
 

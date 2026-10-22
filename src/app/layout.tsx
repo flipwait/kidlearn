@@ -4,8 +4,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/lib/auth-context";
 
 export const metadata: Metadata = {
-  title: "KidLearn - Fun Learning for Grades 2-10",
-  description: "Interactive learning platform with AI tutor, games, adventure mode, and parent dashboard",
+  title: "TutorMe — Fun Learning for Grades 2–10",
+  description: "TutorMe: reading, math, games, AI tutor, and parent tools for grades 2–10",
 };
 
 export default function RootLayout({

@@ -1,4 +1,4 @@
-# KidLearn – Interactive Learning Platform (Grades 2–10)
+# TutorMe – Interactive Learning Platform (Grades 2–10)
 
 A modern, dual-theme educational web app built with **Next.js 15** + Tailwind CSS.  
 Ready to deploy on **Vercel**.
@@ -38,7 +38,7 @@ Ready to deploy on **Vercel**.
 cd kidlearn
 git init
 git add .
-git commit -m "Initial commit - KidLearn"
+git commit -m "Initial commit - TutorMe"
 git branch -M main
 git remote add origin https://github.com/YOUR_USERNAME/kidlearn.git
 git push -u origin main

@@ -33,7 +33,7 @@ type GameDef = {
 
 const GAME_CATALOG: GameDef[] = [
   { id: "match-meaning", name: "Quick Pick", description: "See a word — pick it from the choices", icon: Target, color: "from-pink-500 to-rose-600", mode: "pick" },
-  { id: "spell-it", name: "Spell It", description: "Hear/see a clue — type the word", icon: Type, color: "from-blue-500 to-indigo-600", mode: "type" },
+  { id: "spell-it", name: "Spell It", description: "Picture or sound clue — you type the spelling", icon: Type, color: "from-blue-500 to-indigo-600", mode: "type" },
   { id: "unscramble", name: "Unscramble", description: "Letters are mixed up — fix the word", icon: Shuffle, color: "from-violet-500 to-purple-600", mode: "scramble" },
   { id: "missing-letter", name: "Missing Letter", description: "Fill in the blank letter(s)", icon: Puzzle, color: "from-amber-500 to-orange-600", mode: "missing" },
   { id: "flash-memory", name: "Flash Memory", description: "Word flashes — type what you saw", icon: Eye, color: "from-teal-500 to-cyan-600", mode: "type" },
@@ -48,6 +48,24 @@ const GAME_CATALOG: GameDef[] = [
   { id: "memory-match", name: "Word Twin", description: "Pick the matching word from look-alikes", icon: Eye, color: "from-purple-500 to-fuchsia-600", mode: "pick" },
   { id: "streak-challenge", name: "Streak Challenge", description: "How many correct in a row?", icon: Zap, color: "from-rose-500 to-red-600", mode: "pick" },
 ];
+
+
+/** Simple picture clues for common words (emoji). Unknown words use sound only. */
+const WORD_EMOJIS: Record<string, string> = {
+  cat: "🐱", dog: "🐶", sun: "☀️", moon: "🌙", star: "⭐", tree: "🌳", book: "📖",
+  car: "🚗", bus: "🚌", fish: "🐟", bird: "🐦", frog: "🐸", ball: "⚽", cake: "🎂",
+  apple: "🍎", home: "🏠", school: "🏫", water: "💧", fire: "🔥", heart: "❤️",
+  happy: "😊", sad: "😢", run: "🏃", jump: "🦘", sleep: "😴", eat: "🍽️",
+  said: "💬", the: "👉", and: "➕", you: "👆", was: "⏪", for: "🎁", are: "👥",
+  they: "👫", have: "🤝", from: "📤", what: "❓", were: "👥", when: "⏰", your: "🫵",
+  because: "💡", could: "🤔", would: "🤷", should: "✅", there: "📍", their: "👨‍👩‍👧",
+  about: "ℹ️", which: "🔀", people: "👥", through: "🚪", before: "⏪", around: "🔄",
+  red: "🔴", blue: "🔵", green: "🟢", yellow: "🟡", big: "🐘", small: "🐜",
+};
+
+function pictureFor(word: string): string {
+  return WORD_EMOJIS[word.toLowerCase()] || "🔤";
+}
 
 function scramble(word: string): string {
   const chars = word.split("");
@@ -84,6 +102,7 @@ type Round = {
   answer: string;
   options?: string[];
   mode: GameDef["mode"];
+  speakWord?: string;
 };
 
 function buildRound(game: GameDef, word: string, pool: string[]): Round {
@@ -94,17 +113,29 @@ function buildRound(game: GameDef, word: string, pool: string[]): Round {
     case "missing":
       return { prompt: `Fill in the missing letters: ${maskWord(word)}`, answer: word, mode: "type" };
     case "type":
+      if (game.id === "spell-it") {
+        const pic = pictureFor(word);
+        return {
+          prompt: pic === "🔤"
+            ? `Listen, then spell the word (${word.length} letters)`
+            : `What word is this? ${pic}`,
+          answer: word,
+          mode: "type",
+          // flag for UI to auto-speak
+          speakWord: word,
+        } as Round;
+      }
       if (game.id === "flash-memory") {
         return { prompt: `Remember this word (then type it): ${word}`, answer: word, mode: "type" };
       }
       if (game.id === "first-last") {
         return {
-          prompt: `Starts with “${word[0]}” and ends with “${word[word.length - 1]}” · ${word.length} letters`,
+          prompt: `Starts with "${word[0]}" and ends with "${word[word.length - 1]}" · ${word.length} letters`,
           answer: word,
           mode: "type",
         };
       }
-      return { prompt: `Type the word: ${word}`, answer: word, mode: "type" };
+      return { prompt: `Type the spelling (${word.length} letters)`, answer: word, mode: "type", speakWord: word } as Round;
     case "listen":
       return { prompt: `Find the word: ${word}`, answer: word, options: opts, mode: "pick" };
     case "pick":
@@ -205,6 +236,20 @@ export default function GamesPage() {
   };
 
   const current = rounds[idx];
+
+  useEffect(() => {
+    if (current?.speakWord && activeId === "spell-it") {
+      const t = setTimeout(() => {
+        try {
+          const u = new SpeechSynthesisUtterance(current.speakWord);
+          u.rate = 0.85;
+          window.speechSynthesis.cancel();
+          window.speechSynthesis.speak(u);
+        } catch {}
+      }, 300);
+      return () => clearTimeout(t);
+    }
+  }, [current?.speakWord, idx, activeId]);
 
   const submit = (value: string) => {
     if (!current || feedback) return;
@@ -331,7 +376,28 @@ Sample rounds:
               {idx + 1}/{rounds.length}
             </span>
           </div>
-          <h2 className="mb-6 text-center text-lg font-bold">{showPrompt}</h2>
+          {activeId === "spell-it" ? (
+            <div className="mb-6 text-center">
+              <div className="mb-3 text-6xl">
+                {current.speakWord ? pictureFor(current.speakWord) : "🔊"}
+              </div>
+              <p className="text-lg font-bold">Spell the word</p>
+              <p className="mt-1 text-sm text-slate-500">
+                {current.speakWord && pictureFor(current.speakWord) !== "🔤"
+                  ? "Look at the picture or tap Hear"
+                  : "Tap Hear, then type what you hear"}
+              </p>
+              <button
+                type="button"
+                onClick={() => current.speakWord && speak(current.speakWord)}
+                className="mt-3 inline-flex items-center gap-2 rounded-full bg-violet-100 px-4 py-2 text-sm font-medium text-violet-700 dark:bg-violet-900 dark:text-violet-200"
+              >
+                <Volume2 className="h-4 w-4" /> Hear again
+              </button>
+            </div>
+          ) : (
+            <h2 className="mb-6 text-center text-lg font-bold">{showPrompt}</h2>
+          )}
 
           {(current.mode === "pick" || current.options) && (
             <div className="space-y-3">

@@ -25,7 +25,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const STORAGE_KEY = "kidlearn_auth";
 const ASSIGNMENTS_KEY = "kidlearn_assignments";
 
-export function clearAllKidLearnData() {
+export function clearAllTutorMeData() {
   if (typeof window === "undefined") return;
   Object.keys(localStorage)
     .filter((k) => k.startsWith("kidlearn"))
@@ -115,7 +115,7 @@ export function AuthProvider({ children: reactChildren }: { children: React.Reac
   };
 
   const clearAllData = () => {
-    clearAllKidLearnData();
+    clearAllTutorMeData();
     setUser(null);
     setFamilyChildren([]);
     setAssignments([]);

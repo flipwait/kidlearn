@@ -18,7 +18,7 @@ export const readingLibrary: ReadingBook[] = [
   {
     id: "s1",
     title: "The Friendly Frog",
-    author: "KidLearn",
+    author: "TutorMe",
     level: "Grade 2–3",
     grades: [2, 3],
     emoji: "🐸",
@@ -32,7 +32,7 @@ export const readingLibrary: ReadingBook[] = [
   {
     id: "s2",
     title: "My New Puppy",
-    author: "KidLearn",
+    author: "TutorMe",
     level: "Grade 2–3",
     grades: [2, 3],
     emoji: "🐶",
@@ -46,7 +46,7 @@ export const readingLibrary: ReadingBook[] = [
   {
     id: "s3",
     title: "The Little Star",
-    author: "KidLearn",
+    author: "TutorMe",
     level: "Grade 3–4",
     grades: [3, 4],
     emoji: "⭐",
@@ -60,7 +60,7 @@ export const readingLibrary: ReadingBook[] = [
   {
     id: "s4",
     title: "Looking at the Moon",
-    author: "KidLearn",
+    author: "TutorMe",
     level: "Grade 4–5",
     grades: [4, 5],
     emoji: "🌙",
@@ -74,7 +74,7 @@ export const readingLibrary: ReadingBook[] = [
   {
     id: "s5",
     title: "Ocean Helpers",
-    author: "KidLearn",
+    author: "TutorMe",
     level: "Grade 4–5",
     grades: [4, 5],
     emoji: "🌊",
@@ -88,7 +88,7 @@ export const readingLibrary: ReadingBook[] = [
   {
     id: "s6",
     title: "Rainforest Canopy",
-    author: "KidLearn",
+    author: "TutorMe",
     level: "Grade 5–6",
     grades: [5, 6],
     emoji: "🌳",
@@ -102,7 +102,7 @@ export const readingLibrary: ReadingBook[] = [
   {
     id: "s7",
     title: "The Power of Questions",
-    author: "KidLearn",
+    author: "TutorMe",
     level: "Grade 6–7",
     grades: [6, 7],
     emoji: "🔬",
@@ -116,7 +116,7 @@ export const readingLibrary: ReadingBook[] = [
   {
     id: "s8",
     title: "Building a Bridge",
-    author: "KidLearn",
+    author: "TutorMe",
     level: "Grade 7–8",
     grades: [7, 8],
     emoji: "🌉",
@@ -130,7 +130,7 @@ export const readingLibrary: ReadingBook[] = [
   {
     id: "s9",
     title: "Smart Media Habits",
-    author: "KidLearn",
+    author: "TutorMe",
     level: "Grade 8–9",
     grades: [8, 9],
     emoji: "💡",
@@ -144,7 +144,7 @@ export const readingLibrary: ReadingBook[] = [
   {
     id: "s10",
     title: "Reading Complex Texts",
-    author: "KidLearn",
+    author: "TutorMe",
     level: "Grade 9–10",
     grades: [9, 10],
     emoji: "📚",

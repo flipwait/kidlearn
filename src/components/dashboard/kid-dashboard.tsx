@@ -101,7 +101,7 @@ export function KidDashboard() {
             ⭐
           </div>
           <div>
-            <h1 className="text-lg font-bold text-blue-900">KidLearn</h1>
+            <h1 className="text-lg font-bold text-blue-900">TutorMe</h1>
             <p className="text-xs text-blue-500">Kid Mode</p>
           </div>
         </div>
